@@ -5,79 +5,71 @@
       <h1>Projeto: Deploy de WordPress com AWS</h1>
       <div align="center">
         <a href="https://skillicons.dev">
-          <img src="https://skillicons.dev/icons?i=aws,docker,wordpress,mysql,linux" alt="My Skills" 
-            <p align="center">
-  <br>
-    <br>      
-  <img src="https://github.com/user-attachments/assets/79a2e995-a1be-4192-9ded-771004ef7417" width="200">
-</p>
+          <img src="https://skillicons.dev/icons?i=aws,docker,wordpress,mysql,linux" alt="My Skills">
         </a>
       </div>
+      <p align="center">
+        <br>
+        <img src="https://github.com/user-attachments/assets/79a2e995-a1be-4192-9ded-771004ef7417" width="200">
+      </p>
     </td>
   </tr>
 </table>
 
+---
 
-
-## Descrição do Projeto
+## 📄 Descrição do Projeto
 
 Este projeto tem como objetivo implantar uma aplicação WordPress em uma infraestrutura escalável e segura na AWS, utilizando contêineres Docker ou Containerd, banco de dados gerenciado via RDS, armazenamento compartilhado com EFS e distribuição de tráfego com Load Balancer.
 
 ---
 
+## 🛠️ Tecnologias Utilizadas  
 
-# Tecnologias Utilizadas  
-## Serviços e Recursos da AWS  
+### Serviços e Recursos da AWS  
 
-### 🌐 VPC Personalizada  
+#### 🌐 VPC Personalizada  
 - 🌍 2 Subnets públicas (para o ALB)  
 - 🔒 4 Subnets privadas (para EC2 e RDS)  
 - 🗺️ Route Tables  
 - 🌎 Internet Gateway (IGW)  
 - 🚪 NAT Gateway  
 
-### 💻 Amazon EC2  
+#### 💻 Amazon EC2  
 - ⚖️ Auto Scaling Group (ASG)  
 - 📑 Launch Template  
 - 📝 Script de bootstrap (User Data)  
 
-### 🛢️ Amazon RDS  
+#### 🛢️ Amazon RDS  
 - 🗄️ Banco de dados **MySQL/MariaDB**  
 - 🔐 Grupo de segurança (Security Group)  
 - 🔒 Subnets privadas  
 
-### 📂 Amazon EFS  
+#### 📂 Amazon EFS  
 - 📁 Sistema de arquivos **NFS**  
 - 💽 Montado via EC2  
 
-### ⚖️ Application Load Balancer (ALB)  
+#### ⚖️ Application Load Balancer (ALB)  
 - 🔄 Distribuição de tráfego entre instâncias  
 - ❤️ Health Checks configurados  
 
-### 📊 Amazon CloudWatch *(Atividade extra)*  
+#### 📊 Amazon CloudWatch *(Atividade extra)*  
 - 👀 Monitoramento  
 - 📈 Testes de escalabilidade do ASG  
 
-### 🏗️ Infraestrutura como Código *(Atividade extra)*  
+#### 🏗️ Infraestrutura como Código *(Atividade extra)*  
 - ⚒️ Terraform  
 - ⚙️ AWS CloudFormation  
 
+---
 
+## 🏗️ Estrutura do Projeto
 
-
-
-##  Estrutura do Projeto
 <img src="https://github.com/user-attachments/assets/9a8974e4-2959-4021-87b8-8faa61e205e7" alt="Image">
 
-## Ordem das etapas :
+---
 
-## 1- criação de VPC,configuraçoes de subnet, gatewayNAT, Tabelas de rotas,
-
-Nessa etapa, iremos criar e confiigurar a parte de  redes da AWS,
-criaremos a vpc
-
-
-
+## 1️⃣ Criação da VPC e Configurações de Rede
 
 Vamos criar 6 sub-redes, sendo 4 públicas (sendo 2 para NAT Gateway, junto ao Bastion Host) e 4 privadas (para EC2, RDS e EFS), divididas em 2 AZs para maior disponibilidade.
 
@@ -92,39 +84,29 @@ Vamos criar 6 sub-redes, sendo 4 públicas (sendo 2 para NAT Gateway, junto ao B
 | us-east-1b   | Privada  | EC2-2-subnet-private  | Alocar a EC2-2 em subnet privada                            |
 | us-east-1b   | Privada  | EFS-2-subnet-private  | Alocar um mount target do EFS para comunicação com a EC2   |
 
-(mini tutorial)
+> Mini tutorial: Depois de criar as subnets, precisamos criar os NAT Gateways, dividindo-os nas 2 AZs.
 
-
-
-depois de criar as Sub nets, precisamos criar o nat gateway (explicação em nota do que é), entao vamos dividir ele em 2 azs
-
-
-
-### 📥 Informações dos GatewayNAT
-
+### 📥 Informações dos NAT Gateways
 
 | AZ           | Sub-rede | Nome                  | Motivo                                                                 |
 |--------------|----------|----------------------|------------------------------------------------------------------------|
 | us-east-1a   | Pública  | NAT-Bastion-subnet    | Para alocar na tabela de rotas da EC2-1-subnet-private, permitindo que as EC2 desse grupo se comuniquem |
 | us-east-1b   | Privada  | NAT-subnet-public2    | Para alocar na tabela de rotas da EC2-2-subnet-private, permitindo que as EC2 desse grupo se comuniquem |
 
-(mini tuto)
-
+---
 
 ### 🛠️ Passo a Passo para Alocar NAT Gateways às Sub-redes Privadas
 
-Após criar os NAT Gateways, siga os passos abaixo para permitir que as sub-redes privadas tenham rotas de saída e consigam baixar atualizações:
-
-1. Acesse o console da **VPC** no AWS Management Console.
-2. No menu lateral, clique em **Tabelas de Rotas**.
-3. Selecione a **tabela de rotas** associada à sua **sub-rede privada**.
-4. Vá até a aba **Rotas**.
-5. Clique em **Editar rotas**.
-6. Adicione uma rota:
-   - **Destino:** `0.0.0.0/0`
-   - **Alvo:** selecione o **NAT Gateway** correspondente à AZ da sua sub-rede privada.
-7. Salve as alterações.
-8. **Repita o processo para cada sub-rede privada que irá receber uma EC2**, garantindo que cada uma esteja associada ao NAT Gateway correto.
+1. Acesse o console da **VPC** no AWS Management Console.  
+2. No menu lateral, clique em **Tabelas de Rotas**.  
+3. Selecione a **tabela de rotas** associada à sua **sub-rede privada**.  
+4. Vá até a aba **Rotas**.  
+5. Clique em **Editar rotas**.  
+6. Adicione uma rota:  
+   - **Destino:** `0.0.0.0/0`  
+   - **Alvo:** selecione o **NAT Gateway** correspondente à AZ da sua sub-rede privada.  
+7. Salve as alterações.  
+8. **Repita o processo para cada sub-rede privada que irá receber uma EC2**, garantindo que cada uma esteja associada ao NAT Gateway correto.  
 
 ✅ Com isso, suas sub-redes privadas terão acesso à Internet para baixar atualizações e acessar serviços externos.
 
@@ -132,31 +114,45 @@ Após criar os NAT Gateways, siga os passos abaixo para permitir que as sub-rede
 |------------|-------------|------------------------|
 | 0.0.0.0/0  | GatewayNat  | Escolha o gateway criado |
 
+---
 
+## 2️⃣ Criação dos Security Groups
 
-# 🔐 Etapa: Criação dos Security Groups
 No projeto, serão criados 4 Security Groups (SGs), cada um responsável por isolar e proteger um componente específico da arquitetura:
 
-> 🖥️ Instâncias EC2
+- 🖥️ **Instâncias EC2**  
+- 🗄️ **Banco de Dados (RDS MySQL)**  
+- 📁 **Elastic File System (EFS)**  
+- 🌐 **Load Balancer (CLB)**  
 
-> 🗄️ Banco de Dados (RDS MySQL)
+> Para ver as configurações detalhadas do Security Group, clique aqui ->
 
-> 📁 Elastic File System (EFS)
+---
 
-> 🌐 Load Balancer (CLB)
+## 3️⃣ Criação do Bastion Host
 
+- Servirá para acessar as EC2 em sub-redes privadas via SSH.  
+- Conectado às subnets públicas e com regras de Security Group específicas.
 
-para ver as configurações do security group, clique aqui ->
+---
 
+## 4️⃣ Criação e Configuração do RDS (MySQL)
 
-##3- criação do bastion host
+- Banco de dados gerenciado em sub-redes privadas.  
+- Configuração de usuários, permissões e backups automáticos.  
 
+---
 
+## 5️⃣ Criação e Configuração do EFS
 
-##3- criação e configuração do rds(mySql)
+- Sistema de arquivos **NFS** para armazenamento compartilhado.  
+- Criação de mount targets para cada sub-rede privada para comunicação com as EC2.  
 
-##4- criação e configuração do EFS e monunt targets
+---
 
+## 6️⃣ Execução das EC2 via User Data
 
-##5-execução da ec2 por meio do user DATA
+- EC2 inicializadas com script de bootstrap.  
+- Instalação de Docker/Containerd, WordPress e configuração para conectar ao RDS e EFS.  
+- Configuração de variáveis de ambiente e volumes persistentes.  
 
