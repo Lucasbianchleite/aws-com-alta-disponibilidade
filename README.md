@@ -156,3 +156,11 @@ No projeto, serão criados 4 Security Groups (SGs), cada um responsável por iso
 - Instalação de Docker/Containerd, WordPress e configuração para conectar ao RDS e EFS.  
 - Configuração de variáveis de ambiente e volumes persistentes.  
 
+
+
+
+##7 auto scaling
+
+
+
+##8 loadbalancer
