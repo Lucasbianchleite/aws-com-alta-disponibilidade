@@ -180,7 +180,7 @@ No projeto, serão criados 4 Security Groups (SGs), cada um responsável por iso
 
 ---
 
-###8️⃣– Criar Auto Scaling Group (ASG)
+### 8️⃣– Criar Auto Scaling Group (ASG)
 
 - Acesse o console da AWS > **EC2 > Auto Scaling Groups > Criar Auto Scaling Group**
 - **Nome**: `wordpress-asg`
