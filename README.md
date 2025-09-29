@@ -23,43 +23,40 @@
 Este projeto tem como objetivo implantar uma aplicação WordPress em uma infraestrutura escalável e segura na AWS, utilizando contêineres Docker ou Containerd, banco de dados gerenciado via RDS, armazenamento compartilhado com EFS e distribuição de tráfego com Load Balancer.
 
 ---
-
 ## 🛠️ Tecnologias Utilizadas  
 
-### Serviços e Recursos da AWS  
+### 🚀 Serviços AWS  
 
-#### 🌐 VPC Personalizada  
-- 🌍 2 Subnets públicas (para o ALB)  
-- 🔒 4 Subnets privadas (para EC2 e RDS)  
-- 🗺️ Route Tables  
-- 🌎 Internet Gateway (IGW)  
-- 🚪 NAT Gateway  
+| Categoria                         | Serviço / Recurso AWS         | Função                                                                 |
+|----------------------------------|--------------------------------|------------------------------------------------------------------------|
+| 🌐 **Rede (VPC)**                 | VPC Personalizada              | Criação de rede isolada com subnets públicas e privadas                |
+|                                  | Subnets (2 públicas, 4 privadas) | Hospedar recursos (EC2, RDS, EFS e ALB)                               |
+|                                  | Route Tables                   | Controle de rotas internas e externas                                  |
+|                                  | Internet Gateway (IGW)         | Conexão da VPC com a internet                                          |
+|                                  | NAT Gateway                    | Permitir saída à internet para instâncias privadas                     |
+| 💻 **Computação (EC2)**           | Amazon EC2                     | Hospedagem do WordPress em contêineres                                 |
+|                                  | Launch Template                | Padronização da configuração das instâncias                            |
+|                                  | Auto Scaling Group (ASG)       | Escalabilidade automática das instâncias                               |
+|                                  | User Data (Bootstrap)          | Script de inicialização (instalação e configuração)                    |
+| 🛢️ **Banco de Dados (RDS)**       | Amazon RDS (MySQL/MariaDB)     | Banco de dados gerenciado para o WordPress                             |
+|                                  | Security Group dedicado        | Controle de acesso ao banco                                            |
+| 📂 **Armazenamento (EFS)**        | Amazon EFS (NFS)               | Armazenamento compartilhado entre instâncias                           |
+| ⚖️ **Balanceamento de Carga**     | Application Load Balancer (ALB)| Distribuição de tráfego e health checks                                |
+| 📊 **Monitoramento (Extra)**      | Amazon CloudWatch              | Monitoramento de métricas e escalabilidade do ASG                      |
 
-#### 💻 Amazon EC2  
-- ⚖️ Auto Scaling Group (ASG)  
-- 📑 Launch Template  
-- 📝 Script de bootstrap (User Data)  
 
-#### 🛢️ Amazon RDS  
-- 🗄️ Banco de dados **MySQL/MariaDB**  
-- 🔐 Grupo de segurança (Security Group)  
-- 🔒 Subnets privadas  
 
-#### 📂 Amazon EFS  
-- 📁 Sistema de arquivos **NFS**  
-- 💽 Montado via EC2  
+---
 
-#### ⚖️ Application Load Balancer (ALB)  
-- 🔄 Distribuição de tráfego entre instâncias  
-- ❤️ Health Checks configurados  
+### 🛠️ Ferramentas Externas  
 
-#### 📊 Amazon CloudWatch *(Atividade extra)*  
-- 👀 Monitoramento  
-- 📈 Testes de escalabilidade do ASG  
+| Ferramenta         | Função                                                                 |
+|--------------------|------------------------------------------------------------------------|
+| 🐳 **Docker**      | Containerização do WordPress e seus serviços                           |
+| 📰 **WordPress**   | CMS utilizado para publicação e gerenciamento de conteúdo              |
+| 🐧 **Linux (Ubuntu)** | Sistema operacional das instâncias EC2                                |
+| 🗄️ **MySQL** | Banco de dados utilizado pelo WordPress (gerenciado no RDS)           |
 
-#### 🏗️ Infraestrutura como Código *(Atividade extra)*  
-- ⚒️ Terraform  
-- ⚙️ AWS CloudFormation  
 
 ---
 
