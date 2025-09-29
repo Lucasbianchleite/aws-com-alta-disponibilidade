@@ -122,7 +122,6 @@ No projeto, serão criados 4 Security Groups (SGs), cada um responsável por iso
 - 📁 **Elastic File System (EFS)**  
 - 🌐 **Load Balancer (CLB)**  
 
-> Para ver as configurações detalhadas do Security Group, clique aqui ->
 
 ---
 
