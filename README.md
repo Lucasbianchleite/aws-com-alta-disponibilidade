@@ -159,8 +159,49 @@ No projeto, serão criados 4 Security Groups (SGs), cada um responsável por iso
 
 
 
-##7 auto scaling
+### 7️⃣ – Criar Load Balancer (LB)
+
+- Acesse o console da AWS > **EC2 > Load Balancers > Criar Load Balancer**
+- **Escolher**: `Application Load Balancer`
+- **Clique**: `Criar`
+- **Nome do Load Balancer**: ✅ `wordpress-alb`
+- **Esquema**: `Internet-facing`
+- **Mapeamento de rede**:
+  - **VPC**: `wordpress-vpc`
+  - **Availability Zones e subnets**: sub-redes públicas
+    - `wordpress-subnet-public1-us-east-1a`
+    - `wordpress-subnet-public2-us-east-1b`
+- **Grupos de segurança**: `LB-SG`
+- **Listeners e roteamento**:
+  - **Protocolo**: `HTTP`
+  - **Porta**: `80`
+  - **Target Group**: `wordpress-tg`
+- ✅ **Criar**
+
+---
+
+###8️⃣– Criar Auto Scaling Group (ASG)
+
+- Acesse o console da AWS > **EC2 > Auto Scaling Groups > Criar Auto Scaling Group**
+- **Nome**: `wordpress-asg`
+- **Launch Template**: `wordpress-template`
+- **Versão**: ✅ `Default(1)`
+- **VPC**: `wordpress-vpc`
+- **Subnets**: Selecionar 2 subnets privadas
+- **Opção de balanceamento**: `Best balanced effort`
+- **Associar ao Load Balancer**:
+  - **Selecionar Target Group**: `wordpress-tg`
+- **Health checks**:
+  - ✅ `Enable Elastic Load Balancing health checks`
+- **Capacidade desejada**:
+  - **Desejada**: `2`
+  - **Mínima**: `2`
+  - **Máxima**: `4`
+- **Monitoramento (CloudWatch)**:
+  - ✅ `Enable metric collection in CloudWatch`
+- ✅ **Criar**
 
 
 
-##8 loadbalancer
+
+
