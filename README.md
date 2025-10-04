@@ -70,6 +70,8 @@ Este projeto tem como objetivo implantar uma aplicação WordPress em uma infrae
 
 Vamos criar 6 sub-redes, sendo 4 públicas (sendo 2 para NAT Gateway, junto ao Bastion Host) e 4 privadas (para EC2, RDS e EFS), divididas em 2 AZs para maior disponibilidade.
 
+### Para ver as etapas detalhadas, clique aqui --->
+
 ### 📥 Informações das Sub-redes
 
 | AZ           | Tipo     | Nome                  | Motivo                                                      |
@@ -115,12 +117,13 @@ Vamos criar 6 sub-redes, sendo 4 públicas (sendo 2 para NAT Gateway, junto ao B
 
 ## 2️⃣ Criação dos Security Groups
 
-No projeto, serão criados 4 Security Groups (SGs), cada um responsável por isolar e proteger um componente específico da arquitetura:
+No projeto, serão criados 5 Security Groups (SGs), cada um responsável por isolar e proteger um componente específico da arquitetura:
 
 - 🖥️ **Instâncias EC2**  
 - 🗄️ **Banco de Dados (RDS MySQL)**  
 - 📁 **Elastic File System (EFS)**  
-- 🌐 **Load Balancer (CLB)**  
+- 🌐 **Load Balancer (ALB)**  
+- 🤾 **Bastion Host**
 
 
 ---
