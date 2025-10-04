@@ -70,7 +70,7 @@ Este projeto tem como objetivo implantar uma aplicação WordPress em uma infrae
 
 Vamos criar 6 sub-redes, sendo 4 públicas (sendo 2 para NAT Gateway, junto ao Bastion Host) e 4 privadas (para EC2, RDS e EFS), divididas em 2 AZs para maior disponibilidade.
 
-### Para ver as etapas detalhadas, clique aqui --->
+### Para ver as etapas detalhadas, clique aqui ---> [CONFIGURAÇÕES DE REDE](configurações-de-rede.md)
 
 ### 📥 Informações das Sub-redes
 
