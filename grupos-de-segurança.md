@@ -1,14 +1,26 @@
-##para criarmos os gurpos de segurança, vamos precisar definir quantos vamos precisar
->EC2
->RDS-EC2
->BASTION RULES
+# Security Groups AWS
+
+Este documento descreve os Security Groups (SG) necessários para a infraestrutura AWS, incluindo EC2, RDS, Bastion, EFS e ALB.
+
+---
+
+## Tabela de Security Groups
+
+| Nome            | Regras de Entrada                                        | Regras de Saída        | Motivo / Observações                                  |
+|-----------------|---------------------------------------------------------|-----------------------|------------------------------------------------------|
+| **EC2-web**     | HTTP: TCP 80, HTTPS: TCP 443 de 0.0.0.0/0<br>SSH: TCP 22 de Bastion-rules (SG) | Todo tráfego permitido | Instâncias web acessíveis publicamente; SSH restrito via Bastion |
+| **RDS-db**      | MySQL/Aurora: TCP 3306 de EC2-web (SG)                 | Todo tráfego permitido | Banco acessível apenas pelas instâncias EC2-web     |
+| **Bastion-rules** | SSH: TCP 22 do seu IP ou faixa confiável             | Todo tráfego permitido | Acesso SSH seguro para instâncias privadas          |
+| **EFS-access**  | NFS: TCP 2049 de EC2-web (SG)                          | Todo tráfego permitido | Permitir que EC2 monte o EFS                         |
+| **ALB-web**     | HTTP: TCP 80, HTTPS: TCP 443 de 0.0.0.0/0             | HTTP/HTTPS para EC2-web | Balanceador de carga público direcionando tráfego para EC2-web |
+> ⚠️ **Importante:** Associe corretamente os Security Groups (SGs) às instâncias e serviços correspondentes:
+> - **EC2-** → SG `EC2-web`  
+> - **RDS** → SG `RDS-db`  
+> - **Bastion** → SG `Bastion-rules`  
+> - **EFS** → SG `EFS-access`  
+> - **ALB** → SG `ALB-web`
+---
 
 
-ficando a tabela assim
-| nome        | Regras de entrada      | Regras de saída              | Motivo                                                      |
-|--------------|----------|----------------------|------------------------------------------------------------|
-| DB-for-EC2S | xxxxxxxxxxxxxxxx| tipo:MYSQL/Aurora Protocolo:TCP porta:3306 destino: grupo de segurança das ec2   | as ec2 conseguirem acessar o security group |
-| bastion-rules   | todo o trafego | todo o trafego | conseguir fazer o jum do ssh                          |
-| ec2-rules  |   | EFS-1-subnet-private  | Alocar um mount target do EFS para comunicação com a EC2   |
 
-após isso, configuramos nosso security group
+
