@@ -2,6 +2,7 @@
 
 Nesta etapa, vamos criar a **VPC** e as **subnets** que servirão de base para toda a nossa infraestrutura.
 
+
 ---
 
 ## 🔹 Acessando o serviço
@@ -17,6 +18,7 @@ Nesta etapa, vamos criar a **VPC** e as **subnets** que servirão de base para t
 
 ---
 
+
 📌 *Exemplo de configuração (ajuste conforme sua necessidade):*
 
 - **Nome da VPC**: `minha-vpc`
@@ -26,6 +28,8 @@ Nesta etapa, vamos criar a **VPC** e as **subnets** que servirão de base para t
 - **Tabela de rotas**: padrão
 
 ---
+
+
 
 > 🖼️ **Observação:** confira a imagem abaixo antes de continuar para garantir que as opções estão corretas:  
 <img width="1446" height="775" alt="image" src="https://github.com/user-attachments/assets/8d3a3256-5515-4b86-a8a2-d24ee2e45b30" />
@@ -122,3 +126,33 @@ Agora vamos garantir que **cada subnet privada** use o NAT Gateway correspondent
 
 ✅ Agora você tem **dois NAT Gateways configurados em AZs diferentes**, com rotas corretamente associadas para manter a disponibilidade do ambiente.
 
+--- 
+## 📡 Estrutura do Projeto  
+
+
+### Para auxílio, nas configurações abaixo, há uma tabela de sub-redes e NAT Gateway.
+> 📝 **Nota:** Os nomes utilizados são apenas exemplos. Eles são **indiferentes** e podem ser **trocados a qualquer momento**.  
+
+---
+
+### 📥 Informações das Sub-redes  
+
+| **AZ**       | **Tipo**   | **Nome**               | **Motivo**                                                                 |
+|--------------|------------|------------------------|-----------------------------------------------------------------------------|
+| us-east-1a   | Pública    | NAT-Bastion-subnet     | Ter acesso à EC2 em subnet privada e colocar o NAT Gateway da AZ1           |
+| us-east-1a   | Privada    | EC2-1-subnet-private   | Alocar a EC2-1 em subnet privada                                            |
+| us-east-1a   | Privada    | EFS-1-subnet-private   | Alocar um mount target do EFS para comunicação com a EC2                    |
+| us-east-1b   | Pública    | NAT-subnet-public2     | NAT Gateway para a EC2 ter acesso à internet                                |
+| us-east-1b   | Privada    | EC2-2-subnet-private   | Alocar a EC2-2 em subnet privada                                            |
+| us-east-1b   | Privada    | EFS-2-subnet-private   | Alocar um mount target do EFS para comunicação com a EC2                    |
+
+> ⚡ **Mini tutorial:** Depois de criar as **subnets**, precisamos criar os **NAT Gateways**, dividindo-os nas 2 AZs.  
+
+---
+
+### 📥 Informações dos NAT Gateways  
+
+| **AZ**       | **Sub-rede**            | **Nome**              | **Motivo**                                                                 |
+|--------------|-------------------------|-----------------------|-----------------------------------------------------------------------------|
+| us-east-1a   | Pública                 | NAT-Bastion-subnet    | Para alocar na tabela de rotas da EC2-1-subnet-private, permitindo comunicação externa |
+| us-east-1b   | Pública                 | NAT-subnet-public2    | Para alocar na tabela de rotas da EC2-2-subnet-private, permitindo comunicação externa |
