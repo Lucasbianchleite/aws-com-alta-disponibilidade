@@ -55,7 +55,7 @@ Este projeto tem como objetivo implantar uma aplicação **WordPress** em uma in
 | 🗄️ **Banco**       | Amazon RDS (MySQL)                 | Banco de dados gerenciado                                    |
 | 📂 **Armazenamento** | Amazon EFS                        | Compartilhamento de arquivos entre instâncias                |
 | ⚖️ **Balanceador** | Application Load Balancer (ALB)    | Distribuição de tráfego e health checks                      |
-| 📊 **Monitoramento**| CloudWatch                         | Métricas e alarmes                                           |
+
 
 ---
 
