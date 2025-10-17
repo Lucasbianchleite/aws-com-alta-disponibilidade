@@ -40,5 +40,16 @@ Ele é o único servidor com acesso SSH liberado publicamente e funciona como in
 
 ---
 
-## 🔗 Fluxo de Conexão
 
+
+## 💻 Exemplo de Conexão
+
+1. Conecte-se ao Bastion Host:
+   ```bash
+   ssh -i "minha-chave.pem" ec2-user@<IP_ELASTIC_BASTION>
+
+  ``
+  após a entrada no bastion, voce deve baixar sua chave 
+
+
+  
