@@ -48,9 +48,6 @@ Este documento descreve os **Security Groups (SGs)** necessários para a infraes
 
 ---
 
-✅ Agora o documento está **completo**, com teoria, tabela organizada e tutorial prático para replicar no console da AWS.  
-
-Quer que eu adicione também a versão **via AWS CLI** (com comandos `aws ec2 create-security-group` + `aws ec2 authorize-security-group-ingress`)?
 
 
 
