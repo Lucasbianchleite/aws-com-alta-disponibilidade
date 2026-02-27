@@ -108,6 +108,7 @@ Criados 5 SGs para:
 - Bastion Host  
 
 🔗 [Detalhes da configuração de SG](grupos-de-segurança.md)
+
 ---
 
 ### 3️⃣ Criação do Bastion Host  
@@ -115,6 +116,7 @@ Criados 5 SGs para:
 - Acesso restrito ao IP do administrador  
 
 🔗 [Detalhes da configuração de rede](configurações-de-rede.md)
+
 ---
 
 ### 4️⃣ Criação e Configuração do RDS (MySQL)  
