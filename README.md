@@ -115,7 +115,7 @@ Criados 5 SGs para:
 - Servidor de administração via SSH em sub-rede pública  
 - Acesso restrito ao IP do administrador  
 
-🔗 [Detalhes da configuração de rede](bastion host.md)
+🔗 [Detalhes do Bastion Host](bastion-host.md)
 
 ---
 
