@@ -121,7 +121,9 @@ Criados 5 SGs para:
 
 ### 4️⃣ Criação e Configuração do RDS (MySQL)  
 - Banco em sub-rede privada  
-- Backups automáticos e Multi-AZ habilitados  
+- Backups automáticos e Multi-AZ habilitados
+  
+🔗 [Detalhes da configuração do Banco de Dados](configurações-de-rede.md)
 
 ---
 
