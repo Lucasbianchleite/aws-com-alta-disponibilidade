@@ -18,23 +18,6 @@ s
 
 ---
 
-## 📑 Sumário
-1. [Descrição do Projeto](#-descrição-do-projeto)  
-2. [Arquitetura AWS](#-arquitetura-aws)  
-3. [Ferramentas Utilizadas](#️-ferramentas-externas)  
-4. [Estrutura do Projeto](#-estrutura-do-projeto)  
-5. [Passos de Implementação](#-passos-de-implementação)  
-   - [5️⃣ . 1️⃣ VPC e Rede](#1️⃣-criação-da-vpc-e-configurações-de-rede)  
-   - [5️⃣ . 2️⃣ Security Groups](#2️⃣-criação-dos-security-groups)  
-   - [5️⃣ . 3️⃣ Bastion Host](#3️⃣-criação-do-bastion-host)  
-   - [5️⃣ . 4️⃣ Banco de Dados (RDS)](#4️⃣-criação-e-configuração-do-rds-mysql)  
-   - [5️⃣ . 5️⃣ EFS](#5️⃣-criação-e-configuração-do-efs)  
-   - [5️⃣ . 6️⃣ EC2 e User Data](#6️⃣-execução-das-ec2-via-user-data)  
-   - [5️⃣ . 7️⃣ Load Balancer](#7️⃣--criar-load-balancer-lb)  
-   - [5️⃣ . 8️⃣ Auto Scaling Group](#8️⃣--criar-auto-scaling-group-asg)  
-
----
-
 ## 📄 Descrição do Projeto  
 
 Este projeto tem como objetivo implantar uma aplicação **WordPress** em uma infraestrutura escalável e segura na **AWS**, utilizando:  
