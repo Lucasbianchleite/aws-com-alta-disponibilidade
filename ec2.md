@@ -1,68 +1,148 @@
-###  Execução das EC2 via User Data
+## 🐳 Execução das EC2 via Launch Template + User Data
 
-As instâncias EC2 são iniciadas a partir de um **Launch Template** que executa o script **`userdata.sh`** no primeiro boot. Esse script automatiza a instalação de dependências, a montagem do EFS e o deploy do WordPress via Docker Compose. :contentReference[oaicite:0]{index=0}
+A criação das instâncias EC2 ocorre através de um **Launch Template**, que contém o script `userdata.sh`.  
+Esse script é executado automaticamente no primeiro boot da instância.
 
----
-
-#### 6.1 Variáveis configuradas no início do script
-
-No `userdata.sh`, você define os parâmetros de conexão com o **RDS** e o identificador do **EFS**:
-
-- `RDS_ENDPOINT` (endpoint do banco)
-- `RDS_PORT` (3306)
-- `DB_NAME`, `DB_USER`, `DB_PASS`
-- `EFS_FS_ID` (ID do filesystem)
-- `EFS_MOUNT` (ponto de montagem, ex: `/mnt/efs`) :contentReference[oaicite:1]{index=1}
-
-> Observação: no repositório esses valores aparecem como exemplo. No uso real, substitua pelo endpoint/ID corretos do seu ambiente. :contentReference[oaicite:2]{index=2}
+Antes de criar o Launch Template, é necessário coletar todas as informações que serão utilizadas nas variáveis do script.
 
 ---
 
-#### 6.2 Instalação automática de Docker e utilitários do EFS
+# 🔎 1️⃣ Coletando as Informações Necessárias
 
-O script realiza update e instala os pacotes necessários para:
-- executar containers (**Docker**)
-- montar o filesystem (**amazon-efs-utils**) :contentReference[oaicite:3]{index=3}
+## 📌 1.1 Informações do Banco de Dados (RDS)
 
-Em seguida, habilita e inicia o serviço do Docker para garantir que ele suba automaticamente. :contentReference[oaicite:4]{index=4}
+1. Acesse **AWS Console → RDS → Databases**
+2. Clique na instância criada
+3. Localize e copie:
 
----
+- **Endpoint** → será usado em `RDS_ENDPOINT`
+- **Porta** → normalmente `3306`
+- **Master username** → será usado em `DB_USER`
 
-#### 6.3 Instalação do Docker Compose
+O nome do banco (`DB_NAME`) é o definido durante a criação do RDS.
 
-O `userdata.sh` baixa o binário do **Docker Compose** (release mais recente) e aplica permissão de execução, permitindo subir o WordPress via `docker-compose up -d`. :contentReference[oaicite:5]{index=5}
+A senha (`DB_PASS`) é a senha configurada ao criar o banco.
 
----
+Você utilizará essas informações nas variáveis:
 
-#### 6.4 Montagem do EFS na instância
-
-O script:
-1. cria o diretório de montagem (`/mnt/efs`)
-2. monta o EFS usando **TLS**:
-   - `mount -t efs -o tls ${EFS_FS_ID}:/ ${EFS_MOUNT}`
-3. ajusta permissões do diretório montado (owner e modo) :contentReference[oaicite:6]{index=6}
-
-Isso garante **persistência e compartilhamento** de arquivos do WordPress entre múltiplas instâncias do ASG. :contentReference[oaicite:7]{index=7}
-
----
-
-#### 6.5 Deploy do WordPress via Docker Compose (com RDS + EFS)
-
-O `userdata.sh` gera um `docker-compose.yml` com o serviço do WordPress e configura:
-
-- Variáveis `WORDPRESS_DB_*` apontando para o **RDS** (`RDS_ENDPOINT:RDS_PORT`, nome do banco, usuário e senha) :contentReference[oaicite:8]{index=8}
-- Volume persistente do WordPress:
-  - `${EFS_MOUNT}:/var/www/html` (mantém uploads/temas/plugins no EFS) :contentReference[oaicite:9]{index=9}
-
-Por fim, ele sobe o container com:
-
-- `docker-compose up -d` :contentReference[oaicite:10]{index=10}
+```bash
+RDS_ENDPOINT="seu-endpoint.rds.amazonaws.com"
+RDS_PORT=3306
+DB_NAME="nome_do_banco"
+DB_USER="usuario"
+DB_PASS="senha"
+```
 
 ---
 
-#### 6.6 Resultado no Auto Scaling
+## 📌 1.2 Informações do Amazon EFS
 
-Quando o Auto Scaling Group cria uma nova instância:
-- o User Data executa automaticamente
-- a instância monta o EFS, configura o WordPress e conecta no RDS
-- o ALB pode enviar tráfego assim que os health checks estiverem OK :contentReference[oaicite:11]{index=11}
+1. Acesse **AWS Console → EFS → File systems**
+2. Clique no filesystem criado
+3. Copie o campo:
+
+- **File system ID** (exemplo: `fs-0a1b2c3d4e5f`)
+
+Utilize no script:
+
+```bash
+EFS_FS_ID="fs-xxxxxxxxxxxxxxxxx"
+EFS_MOUNT="/mnt/efs"
+```
+
+---
+
+# 🚀 2️⃣ Criando o Launch Template com User Data
+
+Após coletar todas as informações, será criado o Launch Template contendo o script.
+
+1. Vá em **EC2 → Launch Templates**
+2. Clique em **Create launch template**
+3. Configure:
+
+- **Nome**: `wordpress-template`
+- **AMI**: Amazon Linux 2
+- **Instance Type**: t2.micro (ou similar)
+- **Key Pair**: selecione sua chave SSH
+- **Security Group**: `EC2-web`
+
+4. Expanda a seção **Advanced Details**
+5. No campo **User Data**, cole o script completo `userdata.sh` já com as variáveis alteradas para o seu ambiente
+6. Clique em **Create launch template**
+
+---
+
+# 📄 Script completo `userdata.sh`
+
+```bash
+#!/bin/bash
+
+# ==============================================
+# 🚀 Script de Deploy Automático: WordPress + RDS + EFS
+# ==============================================
+# Este script configura um ambiente WordPress em uma instância EC2:
+# - Banco de dados externo no Amazon RDS
+# - Armazenamento persistente no Amazon EFS
+# - Container WordPress rodando via Docker Compose
+# ==============================================
+
+# ---------- Variáveis de Ambiente ----------
+RDS_ENDPOINT="database-wordpress.abcdefghijklmnopqus-east-1.rds.amazonaws.com"   # Endpoint do RDS (MySQL)
+RDS_PORT=3306                                                                    # Porta padrão MySQL
+DB_NAME="meu_banco"                                                               # Nome do banco de dados
+DB_USER="admin"                                                                   # Usuário do banco
+DB_PASS="12345678"                                                                # Senha do banco
+EFS_FS_ID="fs-asdvdfdsfasddasd"                                                   # ID do EFS
+EFS_MOUNT="/mnt/efs"                                                              # Caminho local de montagem do EFS
+
+# ---------- Atualização e instalação de pacotes ----------
+echo "📦 Atualizando pacotes e instalando dependências..."
+sudo yum update -y
+sudo yum install -y docker amazon-efs-utils
+
+# ---------- Configuração do Docker ----------
+echo "🐳 Habilitando e iniciando Docker..."
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# ---------- Instalação do Docker Compose ----------
+echo "📥 Instalando Docker Compose..."
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+     -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# ---------- Montagem do EFS ----------
+echo "🗂️ Configurando montagem do EFS..."
+sudo mkdir -p ${EFS_MOUNT}
+sudo mount -t efs -o tls ${EFS_FS_ID}:/ ${EFS_MOUNT}
+sudo chown -R 1000:1000 ${EFS_MOUNT}   # UID 1000 geralmente = www-data ou apache/nginx
+sudo chmod -R 775 ${EFS_MOUNT}
+
+# ---------- Criação do arquivo docker-compose ----------
+echo "⚙️ Gerando arquivo docker-compose.yml..."
+cat <<EOF | sudo tee /home/ec2-user/docker-compose.yml > /dev/null
+version: "3.8"
+
+services:
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      WORDPRESS_DB_HOST: ${RDS_ENDPOINT}:${RDS_PORT}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASS}
+    volumes:
+      - ${EFS_MOUNT}:/var/www/html
+EOF
+
+# ---------- Deploy do WordPress ----------
+echo "🚀 Subindo container WordPress..."
+cd /home/ec2-user
+sudo docker-compose up -d
+
+echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (porta 80)."
+```
