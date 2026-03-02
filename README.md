@@ -130,7 +130,7 @@ Criados 5 SGs para:
 ### 5️⃣ Criação e Configuração do EFS  
 - Sistema de arquivos distribuído  
 - Mount targets em cada subnet privada  
-
+🔗 [Detalhes da configuração do EFS](efs.md)
 ---
 
 ### 6️⃣ Execução das EC2 via User Data  
