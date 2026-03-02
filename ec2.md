@@ -1,4 +1,4 @@
-### 6️⃣ Execução das EC2 via User Data
+###  Execução das EC2 via User Data
 
 As instâncias EC2 são iniciadas a partir de um **Launch Template** que executa o script **`userdata.sh`** no primeiro boot. Esse script automatiza a instalação de dependências, a montagem do EFS e o deploy do WordPress via Docker Compose. :contentReference[oaicite:0]{index=0}
 
