@@ -72,7 +72,7 @@ Este projeto tem como objetivo implantar uma aplicação **WordPress** em uma in
 
 ## 🔧 Passos de Implementação  
 
-### 1️⃣ Criação da VPC e Configurações de Rede  
+## 1️⃣ Criação da VPC e Configurações de Rede  
 - 6 subnets (2 públicas + 4 privadas) em **2 AZs** para alta disponibilidade  
 - NAT Gateway por AZ  
 - Bastion Host em sub-rede pública para acessar instâncias privadas
@@ -82,7 +82,7 @@ Este projeto tem como objetivo implantar uma aplicação **WordPress** em uma in
 
 ---
 
-### 2️⃣ Criação dos Security Groups  
+## 2️⃣ Criação dos Security Groups  
 Criados 5 SGs para:  
 - EC2  
 - RDS  
@@ -94,7 +94,7 @@ Criados 5 SGs para:
 
 ---
 
-### 3️⃣ Criação do Bastion Host  
+## 3️⃣ Criação do Bastion Host  
 - Servidor de administração via SSH em sub-rede pública  
 - Acesso restrito ao IP do administrador  
 
@@ -102,7 +102,7 @@ Criados 5 SGs para:
 
 ---
 
-### 4️⃣ Criação e Configuração do RDS (MySQL)  
+## 4️⃣ Criação e Configuração do RDS (MySQL)  
 - Banco em sub-rede privada  
 - Backups automáticos e Multi-AZ habilitados
   
@@ -110,18 +110,18 @@ Criados 5 SGs para:
 
 ---
 
-### 5️⃣ Criação e Configuração do EFS  
+## 5️⃣ Criação e Configuração do EFS  
 - Sistema de arquivos distribuído  
 - Mount targets em cada subnet privada  
 🔗 [Detalhes da configuração do EFS](efs.md)
 ---
 
-### 6️⃣ Execução das EC2 via User Data  
+## 6️⃣ Execução das EC2 via User Data  
 - Instalação automática de Docker/Containerd  
 - Deploy do WordPress  
 - Conexão com RDS e EFS  
 🔗 [Detalhes da configuração do Launch template](ec2.md)
-# 📄 Script completo `userdata.sh`
+### 📄 Script completo `userdata.sh`
 
 ```bash
 #!/bin/bash
