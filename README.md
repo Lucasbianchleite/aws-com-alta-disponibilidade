@@ -123,7 +123,7 @@ Criados 5 SGs para:
 - Banco em sub-rede privada  
 - Backups automáticos e Multi-AZ habilitados
   
-🔗 [Detalhes da configuração do Banco de Dados](configurações-de-rede.md)
+🔗 [Detalhes da configuração do Banco de Dados](rds.md)
 
 ---
 
