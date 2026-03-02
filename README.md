@@ -120,7 +120,7 @@ Criados 5 SGs para:
 - Instalação automática de Docker/Containerd  
 - Deploy do WordPress  
 - Conexão com RDS e EFS  
-
+🔗 [Detalhes da configuração do Launch template](ec2.md)
 ---
 
 ### 7️⃣ – Criar Load Balancer (LB)  
