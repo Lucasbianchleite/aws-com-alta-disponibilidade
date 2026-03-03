@@ -44,12 +44,64 @@ Ele é o único servidor com acesso SSH liberado publicamente e funciona como in
 
 ## 💻 Exemplo de Conexão
 
-1. Conecte-se ao Bastion Host:
-   ```bash
-   ssh -i "minha-chave.pem" ec2-user@<IP_ELASTIC_BASTION>
+1. Conecte-se ao **Bastion Host** utilizando sua chave SSH:
 
-  ``
-  após a entrada no bastion, voce deve baixar sua chave 
+```bash
+ssh -i "minha-chave.pem" ec2-user@<IP_ELASTIC_BASTION>
+```
 
+2. Após acessar o Bastion Host, envie sua chave privada para ele (caso precise acessar outras instâncias):
+
+```bash
+scp -i "minha-chave.pem" minha-chave.pem ec2-user@<IP_ELASTIC_BASTION>:/home/ec2-user/
+```
+
+3. Dentro do Bastion Host, ajuste as permissões da chave:
+
+```bash
+chmod 400 minha-chave.pem
+```
+
+4. Agora conecte-se à instância privada utilizando o **IP privado da EC2**:
+
+```bash
+ssh -i "minha-chave.pem" ec2-user@<IP_PRIVADO_EC2>
+```
+
+---
+
+## 🔐 Boas Práticas de Segurança
+
+Para aumentar a segurança do Bastion Host, recomenda-se:
+
+- 🔒 Permitir acesso SSH **apenas do IP do administrador**
+- 🚫 Não permitir acesso SSH direto às instâncias privadas
+- 🔑 Utilizar **Key Pair ao invés de senha**
+- 📜 Monitorar acessos utilizando **AWS CloudTrail ou logs do sistema**
+- 🔁 Rotacionar chaves de acesso periodicamente
+
+---
+
+## 📌 Fluxo de Acesso
+
+O fluxo de acesso à infraestrutura ocorre da seguinte forma:
+
+```
+Administrador
+     │
+     ▼
+Bastion Host (Subnet Pública)
+     │
+     ▼
+Instâncias EC2 (Subnets Privadas)
+```
+
+Esse modelo reduz significativamente a superfície de ataque da infraestrutura, pois **apenas um servidor possui acesso direto pela internet**, enquanto todos os demais recursos permanecem protegidos dentro da rede privada da VPC.
+
+---
+
+## ✅ Resultado
+
+Com a implementação do **Bastion Host**, o acesso administrativo à infraestrutura passa a ocorrer de forma **segura, controlada e auditável**, garantindo que as instâncias privadas permaneçam protegidas contra acessos diretos da internet.
 
   
