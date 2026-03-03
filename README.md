@@ -78,7 +78,7 @@ Este projeto tem como objetivo implantar uma aplicação **WordPress** em uma in
 - Bastion Host em sub-rede pública para acessar instâncias privadas
 
 
-🔗 [Detalhes da configuração de rede](configurações-de-rede.md)
+🔗 [Detalhes da configuração de rede](/docs/configurações-de-rede.md)
 
 ---
 
@@ -90,7 +90,7 @@ Criados 5 SGs para:
 - Load Balancer  
 - Bastion Host  
 
-🔗 [Detalhes da configuração de SG](grupos-de-segurança.md)
+🔗 [Detalhes da configuração de SG](/docs/grupos-de-segurança.md)
 
 ---
 
@@ -98,7 +98,7 @@ Criados 5 SGs para:
 - Servidor de administração via SSH em sub-rede pública  
 - Acesso restrito ao IP do administrador  
 
-🔗 [Detalhes do Bastion Host](bastion-host.md)
+🔗 [Detalhes do Bastion Host](/docs/bastion-host.md)
 
 ---
 
@@ -106,21 +106,21 @@ Criados 5 SGs para:
 - Banco em sub-rede privada  
 - Backups automáticos e Multi-AZ habilitados
   
-🔗 [Detalhes da configuração do Banco de Dados](rds.md)
+🔗 [Detalhes da configuração do Banco de Dados](/docs/rds.md)
 
 ---
 
 ## 5️⃣ Criação e Configuração do EFS  
 - Sistema de arquivos distribuído  
 - Mount targets em cada subnet privada  
-🔗 [Detalhes da configuração do EFS](efs.md)
+🔗 [Detalhes da configuração do EFS](/docs/efs.md)
 ---
 
 ## 6️⃣ Execução das EC2 via User Data  
 - Instalação automática de Docker/Containerd  
 - Deploy do WordPress  
 - Conexão com RDS e EFS  
-🔗 [Detalhes da configuração do Launch template](ec2.md)
+🔗 [Detalhes da configuração do Launch template](/docs/ec2.md)
 ### 📄 Script completo `userdata.sh`
 
 ```bash
