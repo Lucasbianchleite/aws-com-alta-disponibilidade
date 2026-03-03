@@ -16,6 +16,13 @@
 </table>
 
 
+# 🖥️ Infraestrutura WordPress - AWS
+
+![Status](https://img.shields.io/badge/Status-100%25%20Conclu%C3%ADdo-brightgreen)
+![AWS](https://img.shields.io/badge/AWS-Infraestrutura-orange)
+![WordPress](https://img.shields.io/badge/WordPress-Docker-blue)
+  
+ 
 ---
 
 ## 📄 Descrição do Projeto  
