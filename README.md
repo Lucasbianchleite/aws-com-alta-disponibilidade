@@ -120,8 +120,11 @@ Criados 5 SGs para:
 ## 5️⃣ Criação e Configuração do EFS  
 - Sistema de arquivos distribuído  
 - Mount targets em cada subnet privada
-  
-🔗 [Detalhes da configuração do EFS](/docs/efs.md)
+
+
+
+
+  🔗 [Detalhes da configuração do EFS](/docs/efs.md)
 ---
 
 ## 6️⃣ Execução das EC2 via User Data  
@@ -211,8 +214,8 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 - Internet-facing  
 - Listener HTTP na porta 80  
 - Target Group: `wordpress-tg`
-  
-🔗 [Detalhes da configuração do Load Balancer](/docs/load-balancer.md)
+
+  🔗 [Detalhes da configuração do Load Balancer](/docs/load-balancer.md)
 ---
 
 ### 8️⃣ – Criar Auto Scaling Group (ASG)  
