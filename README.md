@@ -280,7 +280,7 @@ Projeto desenvolvido por **Lucas Bianchini Leite**.
 Se quiser trocar uma ideia sobre **Cloud, DevOps, AWS ou projetos de infraestrutura**, fique à vontade para entrar em contato.
 
 🔗 **LinkedIn**  
-https://www.linkedin.com/in/SEU_LINKEDIN
+https://www.linkedin.com/in/lucasbianchini01/
 
 📧 **Email**  
 Lucas.contato318@gmail.com
