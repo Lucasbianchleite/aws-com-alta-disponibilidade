@@ -202,7 +202,7 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 - Internet-facing  
 - Listener HTTP na porta 80  
 - Target Group: `wordpress-tg`  
-
+🔗 [Detalhes da configuração do Launch template](/docs/load-balancer.md)
 ---
 
 ### 8️⃣ – Criar Auto Scaling Group (ASG)  
