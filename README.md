@@ -205,7 +205,7 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 - Listener HTTP na porta 80  
 - Target Group: `wordpress-tg`
   
-🔗 [Detalhes da configuração do Launch template](/docs/load-balancer.md)
+🔗 [Detalhes da configuração do Load Balancer](/docs/load-balancer.md)
 ---
 
 ### 8️⃣ – Criar Auto Scaling Group (ASG)  
@@ -215,6 +215,9 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 - Escalabilidade: mín. 2, máx. 4 instâncias  
 - Health checks via ALB + CloudWatch  
 
+🔗 [Detalhes da configuração do Auto Scaling Group](/docs/ASG.md)
+
+docs/ASG.md
 ---
 
 ✅ Com isso, o ambiente fica **escalável, seguro e tolerante a falhas**.
