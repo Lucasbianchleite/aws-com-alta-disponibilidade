@@ -112,14 +112,16 @@ Criados 5 SGs para:
 
 ## 5️⃣ Criação e Configuração do EFS  
 - Sistema de arquivos distribuído  
-- Mount targets em cada subnet privada  
+- Mount targets em cada subnet privada
+  
 🔗 [Detalhes da configuração do EFS](/docs/efs.md)
 ---
 
 ## 6️⃣ Execução das EC2 via User Data  
 - Instalação automática de Docker/Containerd  
 - Deploy do WordPress  
-- Conexão com RDS e EFS  
+- Conexão com RDS e EFS
+  
 🔗 [Detalhes da configuração do Launch template](/docs/ec2.md)
 ### 📄 Script completo `userdata.sh`
 
@@ -201,7 +203,8 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 - Application Load Balancer (ALB)  
 - Internet-facing  
 - Listener HTTP na porta 80  
-- Target Group: `wordpress-tg`  
+- Target Group: `wordpress-tg`
+  
 🔗 [Detalhes da configuração do Launch template](/docs/load-balancer.md)
 ---
 
