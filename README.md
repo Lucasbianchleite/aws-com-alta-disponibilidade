@@ -231,6 +231,8 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 
 <div align="center">
 
+<img width="1915" height="936" alt="image" src="https://github.com/user-attachments/assets/16bf4683-3a5f-46b5-a91a-2156d451cc47" />
+
 
 
 </div>
