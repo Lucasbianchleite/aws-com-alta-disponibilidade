@@ -37,6 +37,23 @@ Este projeto tem como objetivo implantar uma aplicação **WordPress** em uma in
 
 ---
 
+# 📦 Controle de Versões da Stack
+
+Para garantir estabilidade e evitar incompatibilidades entre componentes da infraestrutura, as seguintes versões foram utilizadas neste projeto.
+
+| Componente | Versão | Observação |
+|---|---|---|
+| **AWS EC2 AMI** | Amazon Linux 2 | Sistema operacional das instâncias |
+| **Docker** | 24.x | Runtime de containers |
+| **Docker Compose** | v2.24.6 | Orquestração dos containers |
+| **WordPress** | 6.4.3 (PHP 8.2 Apache) | Imagem oficial Docker |
+| **MySQL (RDS)** | 8.0.x | Banco de dados gerenciado |
+| **Amazon EFS** | NFS v4.1 | Sistema de arquivos distribuído |
+| **Linux Kernel** | padrão Amazon Linux | Gerenciado pela AWS |
+| **Porta da Aplicação** | 80 | Exposição do container WordPress |
+
+---
+
 ## 🌐 Arquitetura AWS  
 
 | Categoria          | Serviço / Recurso AWS              | Função                                                       |
