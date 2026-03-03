@@ -227,4 +227,11 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 
 ---
 
-✅ Com isso, o ambiente fica **escalável, seguro e tolerante a falhas**.
+## ✅ Status do Projeto
+
+<div align="center">
+
+
+
+</div>
+
