@@ -217,7 +217,7 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 
 🔗 [Detalhes da configuração do Auto Scaling Group](/docs/ASG.md)
 
-docs/ASG.md
+
 ---
 
 ✅ Com isso, o ambiente fica **escalável, seguro e tolerante a falhas**.
