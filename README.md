@@ -230,14 +230,65 @@ echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (
 
 ---
 
-## ✅ Status do Projeto
+# ✅ Status do Projeto
 
 <div align="center">
 
-<img width="1915" height="936" alt="image" src="https://github.com/user-attachments/assets/16bf4683-3a5f-46b5-a91a-2156d451cc47" />
-
-<img width="1913" height="912" alt="image" src="https://github.com/user-attachments/assets/9762b0f7-0af7-4825-904b-104fa9d92901" />
-
+<img src="https://github.com/user-attachments/assets/9762b0f7-0af7-4825-904b-104fa9d92901" width="900">
 
 </div>
 
+A aplicação **WordPress foi implantada com sucesso** na infraestrutura AWS.
+
+Durante o primeiro acesso, o WordPress apresenta a tela de **configuração inicial de idioma**, indicando que:
+
+- O container WordPress foi iniciado corretamente
+- A aplicação está rodando nas instâncias EC2
+- A comunicação com o banco RDS está funcional
+- A infraestrutura provisionada está operacional
+
+Após concluir a configuração inicial do WordPress, o sistema passa a exibir a página padrão do blog com a mensagem **"Olá, mundo!"**, confirmando que a aplicação está pronta para uso.
+
+---
+
+# 🎯 Conclusão
+
+Este projeto demonstra a implementação de uma arquitetura **moderna, escalável e resiliente** para aplicações web na AWS.
+
+Com a utilização de **Load Balancer, Auto Scaling, RDS Multi-AZ e EFS**, a aplicação consegue:
+
+- 📈 Escalar automaticamente conforme a demanda
+- 🌍 Manter alta disponibilidade
+- 🛡️ Garantir maior resiliência contra falhas
+- ⚙️ Automatizar o provisionamento das instâncias
+
+Essa arquitetura segue boas práticas amplamente utilizadas em ambientes profissionais de **Cloud e DevOps**, demonstrando como aplicações web podem ser implantadas de forma **segura, escalável e altamente disponível na AWS**.
+
+---
+
+# 👨‍💻 Autor
+
+Projeto desenvolvido por **Lucas Bianchini Leite**.
+
+🎓 Estudante de **Segurança da Informação**  
+☁️ Foco em **Cloud, DevOps e Segurança**
+
+---
+
+## 📬 Contato
+
+Se quiser trocar uma ideia sobre **Cloud, DevOps, AWS ou projetos de infraestrutura**, fique à vontade para entrar em contato.
+
+🔗 **LinkedIn**  
+https://www.linkedin.com/in/SEU_LINKEDIN
+
+📧 **Email**  
+Lucas.contato318@gmail.com
+
+---
+
+<p align="center">
+
+⭐ Se este projeto foi útil para você, considere dar uma **star** no repositório!
+
+</p>
