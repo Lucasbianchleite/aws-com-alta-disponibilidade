@@ -1,70 +1,140 @@
 #!/bin/bash
-
 # ==============================================
-# 🚀 Script de Deploy Automático: WordPress + RDS + EFS
+# 🚀 Deploy Automático: WordPress + RDS + EFS (EC2 User Data)
 # ==============================================
-# Este script configura um ambiente WordPress em uma instância EC2:
-# - Banco de dados externo no Amazon RDS
-# - Armazenamento persistente no Amazon EFS
-# - Container WordPress rodando via Docker Compose
+# Melhorias incluídas:
+# - Logs do user-data (debug fácil)
+# - Fail-fast e validações
+# - Persistência do EFS no reboot (/etc/fstab)
+# - Docker Compose mais robusto (tenta v2 e fallback v1)
+# - Evita "latest" (fixa versão do WordPress)
+# - Mensagens mais coerentes (ALB vs IP público)
 # ==============================================
 
-# ---------- Variáveis de Ambiente ----------
-RDS_ENDPOINT="database-wordpress.abcdefghijklmnopqus-east-1.rds.amazonaws.com"   # Endpoint do RDS (MySQL)
-RDS_PORT=3306                                                                    # Porta padrão MySQL
-DB_NAME="meu_banco"                                                               # Nome do banco de dados
-DB_USER="admin"                                                                   # Usuário do banco
-DB_PASS="12345678"                                                                # Senha do banco
-EFS_FS_ID="fs-asdvdfdsfasddasd"                                                   # ID do EFS
-EFS_MOUNT="/mnt/efs"                                                              # Caminho local de montagem do EFS
+set -euo pipefail
 
-# ---------- Atualização e instalação de pacotes ----------
-echo "📦 Atualizando pacotes e instalando dependências..."
-sudo yum update -y
-sudo yum install -y docker amazon-efs-utils
+# Loga tudo em arquivo (muito útil pra depurar user-data)
+exec > >(tee -a /var/log/user-data.log) 2>&1
 
-# ---------- Configuração do Docker ----------
-echo "🐳 Habilitando e iniciando Docker..."
-sudo systemctl enable docker
-sudo systemctl start docker
+# ---------- Variáveis ----------
+RDS_ENDPOINT="database-wordpress.abcdefghijklmnopqus-east-1.rds.amazonaws.com"
+RDS_PORT="3306"
+DB_NAME="meu_banco"
+DB_USER="admin"
+DB_PASS="12345678"
+EFS_FS_ID="fs-asdvdfdsfasddasd"
+EFS_MOUNT="/mnt/efs"
 
-# ---------- Instalação do Docker Compose ----------
-echo "📥 Instalando Docker Compose..."
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
-     -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# Fixe uma versão para evitar surpresas com updates
+WP_IMAGE="wordpress:6.4.3-php8.2-apache"
 
-# ---------- Montagem do EFS ----------
-echo "🗂️ Configurando montagem do EFS..."
-sudo mkdir -p ${EFS_MOUNT}
-sudo mount -t efs -o tls ${EFS_FS_ID}:/ ${EFS_MOUNT}
-sudo chown -R 1000:1000 ${EFS_MOUNT}   # UID 1000 geralmente = www-data ou apache/nginx
-sudo chmod -R 775 ${EFS_MOUNT}
+# ---------- Funções ----------
+log() { echo -e "[INFO] $*"; }
+warn() { echo -e "[WARN] $*"; }
+die() { echo -e "[ERROR] $*"; exit 1; }
 
-# ---------- Criação do arquivo docker-compose ----------
-echo "⚙️ Gerando arquivo docker-compose.yml..."
-cat <<EOF | sudo tee /home/ec2-user/docker-compose.yml > /dev/null
-version: "3.8"
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "Comando não encontrado: $1"
+}
 
+# ---------- Pré-checks ----------
+log "Iniciando deploy..."
+require_cmd yum
+require_cmd systemctl
+
+# ---------- Atualização e instalação ----------
+log "Atualizando pacotes e instalando dependências..."
+yum update -y
+yum install -y docker amazon-efs-utils curl
+
+# ---------- Docker ----------
+log "Habilitando e iniciando Docker..."
+systemctl enable docker
+systemctl start docker
+
+# Docker pronto?
+docker info >/dev/null 2>&1 || die "Docker não iniciou corretamente."
+
+# ---------- Docker Compose (preferir v2, fallback v1) ----------
+log "Instalando Docker Compose..."
+# Tenta instalar plugin v2 (se disponível no repo)
+if yum install -y docker-compose-plugin >/dev/null 2>&1; then
+  log "docker compose (v2) instalado via plugin."
+else
+  warn "docker-compose-plugin não disponível. Instalando docker-compose (binário)."
+  curl -fsSL "https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-$(uname -s)-$(uname -m)" \
+    -o /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose
+fi
+
+# Detecta qual comando compose usar
+COMPOSE_CMD=""
+if docker compose version >/dev/null 2>&1; then
+  COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+  COMPOSE_CMD="docker-compose"
+else
+  die "Nenhuma versão do Docker Compose encontrada."
+fi
+log "Usando Compose: ${COMPOSE_CMD}"
+
+# ---------- Montagem do EFS (com persistência) ----------
+log "Configurando montagem do EFS..."
+mkdir -p "${EFS_MOUNT}"
+
+# Adiciona no fstab para persistir após reboot
+FSTAB_LINE="${EFS_FS_ID}:/ ${EFS_MOUNT} efs _netdev,tls 0 0"
+if ! grep -q "${EFS_FS_ID}:/ ${EFS_MOUNT}" /etc/fstab; then
+  echo "${FSTAB_LINE}" >> /etc/fstab
+  log "Entrada adicionada ao /etc/fstab."
+else
+  log "Entrada do EFS já existe no /etc/fstab."
+fi
+
+# Monta agora
+if ! mountpoint -q "${EFS_MOUNT}"; then
+  mount -a || die "Falha ao montar EFS. Verifique SG do EFS (2049), DNS, mount targets e subnet."
+fi
+
+# Permissões (mais neutras; ideal é EFS Access Point, mas você pediu sem Secrets/extra)
+chmod 775 "${EFS_MOUNT}" || true
+
+# ---------- Criação do docker-compose.yml ----------
+log "Gerando docker-compose.yml..."
+cat > /home/ec2-user/docker-compose.yml <<EOF
 services:
   wordpress:
-    image: wordpress:latest
+    image: ${WP_IMAGE}
     container_name: wordpress
     restart: always
     ports:
       - "80:80"
     environment:
-      WORDPRESS_DB_HOST: ${RDS_ENDPOINT}:${RDS_PORT}
-      WORDPRESS_DB_NAME: ${DB_NAME}
-      WORDPRESS_DB_USER: ${DB_USER}
-      WORDPRESS_DB_PASSWORD: ${DB_PASS}
+      WORDPRESS_DB_HOST: "${RDS_ENDPOINT}:${RDS_PORT}"
+      WORDPRESS_DB_NAME: "${DB_NAME}"
+      WORDPRESS_DB_USER: "${DB_USER}"
+      WORDPRESS_DB_PASSWORD: "${DB_PASS}"
     volumes:
-      - ${EFS_MOUNT}:/var/www/html
+      - "${EFS_MOUNT}:/var/www/html"
 EOF
 
-# ---------- Deploy do WordPress ----------
-echo "🚀 Subindo container WordPress..."
-cd /home/ec2-user
-sudo docker-compose up -d
+chown ec2-user:ec2-user /home/ec2-user/docker-compose.yml
 
-echo "✅ Deploy concluído! Acesse o WordPress pelo IP público da instância (porta 80)."
+# ---------- Subida do WordPress ----------
+log "Subindo container WordPress..."
+cd /home/ec2-user
+
+# Se já existir, atualiza sem quebrar
+${COMPOSE_CMD} up -d || die "Falha ao subir o WordPress via Docker Compose."
+
+# ---------- Verificações rápidas ----------
+log "Verificando se o container está rodando..."
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -i wordpress || die "Container wordpress não apareceu em docker ps."
+
+log "Deploy concluído ✅"
+echo
+echo "👉 A aplicação está no ar."
+echo "   - Se você estiver usando ALB: acesse pelo DNS do ALB."
+echo "   - Se for teste direto: acesse pelo IP/DNS público da instância (porta 80)."
+echo
+echo "📄 Logs: /var/log/user-data.log"
