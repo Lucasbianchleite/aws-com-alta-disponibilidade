@@ -2,83 +2,77 @@
 
 ## 📘 Descrição
 
-O **Bastion Host** (ou **Jump Box**) é uma instância criada em uma **sub-rede pública** da VPC, que serve como **ponto de acesso seguro** para gerenciar instâncias localizadas em **sub-redes privadas**.  
-Ele é o único servidor com acesso SSH liberado publicamente e funciona como intermediário entre o administrador e os recursos internos da rede.
+O **Bastion Host** (também conhecido como **Jump Box**) é uma instância localizada em uma **sub-rede pública** da VPC que serve como **ponto de acesso seguro** para gerenciar recursos hospedados em **sub-redes privadas**.
+
+Ele é o único servidor com acesso SSH permitido a partir da internet e atua como intermediário entre o administrador e os recursos internos da infraestrutura.
+
+Esse modelo reduz a exposição direta das instâncias privadas e centraliza o acesso administrativo da rede.
 
 ---
 
 ## 🎯 Objetivo
 
-- Permitir **acesso SSH seguro** às instâncias privadas (EC2, RDS, etc).  
-- **Restringir a exposição** das instâncias privadas à internet.  
-- Facilitar o **gerenciamento remoto** da infraestrutura de forma controlada.  
-- Centralizar e **auditar conexões administrativas**.
+- Permitir **acesso SSH seguro** às instâncias privadas da infraestrutura
+- **Evitar exposição direta** de servidores internos à internet
+- Facilitar o **gerenciamento remoto** da infraestrutura
+- Centralizar e **auditar acessos administrativos**
 
 ---
 
 ## ⚙️ Configurações Recomendadas
 
 | **Recurso** | **Configuração** |
-|--------------|------------------|
-| **Sistema Operacional** | Amazon Linux 2 / Ubuntu LTS |
-| **Tipo de Instância** | t2.micro (para ambientes de teste) |
+|-------------|------------------|
+| **Sistema Operacional** | Amazon Linux 2 ou Ubuntu LTS |
+| **Tipo de Instância** | t2.micro (ambientes de teste ou laboratório) |
 | **Sub-rede** | Pública |
-| **Elastic IP** | Obrigatório (para IP fixo de acesso) |
-| **Key Pair** | Obrigatória para SSH |
-| **Acesso SSH** | Somente do IP fixo do administrador |
+| **Elastic IP** | Recomendado para IP fixo |
+| **Key Pair** | Obrigatória para autenticação SSH |
+| **Acesso SSH** | Apenas do IP do administrador |
 | **Conexão interna** | Via IP privado para instâncias privadas |
 
-
 ---
 
-## 📊 Security Group - Bastion Host
+## 📊 Security Groups do Bastion
 
-| **Nome** | **Regras de Entrada (Inbound Rules)** | **Regras de Saída (Outbound Rules)** | **Motivo / Observações** |
-|-----------|--------------------------------------|--------------------------------------|---------------------------|
-| **Bastion-rules** | - SSH (TCP 22) do **IP fixo do administrador** | Todo tráfego permitido | Permitir acesso SSH apenas do IP confiável. Servirá como ponto seguro de acesso às instâncias privadas. |
-| **EC2-web** | - SSH (TCP 22) de **Bastion-rules (SG)** | Todo tráfego permitido | Instâncias web privadas só aceitam SSH proveniente do Bastion Host. |
+| **Nome** | **Regras de Entrada (Inbound)** | **Regras de Saída (Outbound)** | **Motivo / Observações** |
+|----------|----------------------------------|--------------------------------|--------------------------|
+| **Bastion-rules** | SSH (TCP 22) **apenas do IP do administrador** | All traffic (padrão AWS) | Permite acesso SSH seguro ao Bastion Host somente a partir de um IP confiável |
+| **EC2-web** | SSH (TCP 22) **de Bastion-rules (SG)** | All traffic (padrão AWS) | Instâncias privadas aceitam conexões SSH apenas do Bastion Host |
 
 ---
-
-
 
 ## 💻 Exemplo de Conexão
 
-1. Conecte-se ao **Bastion Host** utilizando sua chave SSH:
+Primeiro conecte-se ao **Bastion Host** utilizando sua chave SSH:
 
-```bash
-ssh -i "minha-chave.pem" ec2-user@<IP_ELASTIC_BASTION>
-```
+~~~bash
+ssh -A -i "minha-chave.pem" ec2-user@<IP_PUBLICO_BASTION>
+~~~
 
-2. Após acessar o Bastion Host, envie sua chave privada para ele (caso precise acessar outras instâncias):
+A opção `-A` habilita **SSH Agent Forwarding**, permitindo que sua chave SSH seja utilizada no Bastion sem a necessidade de copiar a chave privada para o servidor.
 
-```bash
-scp -i "minha-chave.pem" minha-chave.pem ec2-user@<IP_ELASTIC_BASTION>:/home/ec2-user/
-```
+Após acessar o Bastion Host, conecte-se à instância privada utilizando o **IP privado da EC2**:
 
-3. Dentro do Bastion Host, ajuste as permissões da chave:
+~~~bash
+ssh ec2-user@<IP_PRIVADO_EC2>
+~~~
 
-```bash
-chmod 400 minha-chave.pem
-```
-
-4. Agora conecte-se à instância privada utilizando o **IP privado da EC2**:
-
-```bash
-ssh -i "minha-chave.pem" ec2-user@<IP_PRIVADO_EC2>
-```
+Dessa forma, o acesso às instâncias privadas ocorre **somente através do Bastion Host**, mantendo a infraestrutura protegida.
 
 ---
 
 ## 🔐 Boas Práticas de Segurança
 
-Para aumentar a segurança do Bastion Host, recomenda-se:
+Para aumentar a segurança do Bastion Host:
 
-- 🔒 Permitir acesso SSH **apenas do IP do administrador**
-- 🚫 Não permitir acesso SSH direto às instâncias privadas
-- 🔑 Utilizar **Key Pair ao invés de senha**
-- 📜 Monitorar acessos utilizando **AWS CloudTrail ou logs do sistema**
-- 🔁 Rotacionar chaves de acesso periodicamente
+- Permitir acesso SSH **apenas do IP do administrador**
+- Nunca liberar **SSH (porta 22) para 0.0.0.0/0**
+- Utilizar **Key Pair ao invés de autenticação por senha**
+- Evitar copiar **chaves privadas para servidores**
+- Utilizar **SSH Agent Forwarding** para acessar instâncias privadas
+- Monitorar acessos utilizando **AWS CloudTrail** e **logs do sistema**
+- Rotacionar **chaves de acesso periodicamente**
 
 ---
 
@@ -86,22 +80,16 @@ Para aumentar a segurança do Bastion Host, recomenda-se:
 
 O fluxo de acesso à infraestrutura ocorre da seguinte forma:
 
-```
-Administrador
-     │
-     ▼
-Bastion Host (Subnet Pública)
-     │
-     ▼
+Administrador  
+↓  
+Bastion Host (Subnet Pública)  
+↓  
 Instâncias EC2 (Subnets Privadas)
-```
-
-Esse modelo reduz significativamente a superfície de ataque da infraestrutura, pois **apenas um servidor possui acesso direto pela internet**, enquanto todos os demais recursos permanecem protegidos dentro da rede privada da VPC.
 
 ---
 
 ## ✅ Resultado
 
-Com a implementação do **Bastion Host**, o acesso administrativo à infraestrutura passa a ocorrer de forma **segura, controlada e auditável**, garantindo que as instâncias privadas permaneçam protegidas contra acessos diretos da internet.
+Com a implementação do **Bastion Host**, o acesso administrativo à infraestrutura ocorre de forma **segura, controlada e auditável**, garantindo que as instâncias privadas permaneçam protegidas contra acessos diretos da internet.
 
-  
+Esse modelo reduz significativamente a **superfície de ataque da infraestrutura**, pois apenas um servidor possui acesso direto pela internet, enquanto os demais recursos permanecem isolados dentro da rede privada da VPC.
